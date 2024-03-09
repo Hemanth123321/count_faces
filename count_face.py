@@ -1,4 +1,4 @@
-import dlib
+import face_recognition
 from PIL import Image, ImageDraw, ExifTags
 import numpy as np
 import streamlit as st
@@ -25,12 +25,11 @@ if uploaded_image is not None:
     except (AttributeError, KeyError, IndexError):
         pass
     image_np = np.array(image)
-    detector = dlib.get_frontal_face_detector()
-    dets = detector(image_np, 1)
+    face_locations = face_recognition.face_locations(image_np)
     draw = ImageDraw.Draw(image)
-    for det in dets:
-        top, right, bottom, left = det.top(), det.right(), det.bottom(), det.left()
+    for face_location in face_locations:
+        top, right, bottom, left = face_location
         draw.rectangle(((left, top), (right, bottom)), outline="blue", width=3)
     st.image(image, caption='Uploaded Image with Face Recognition', use_column_width=True)
-    num_faces = len(dets)
+    num_faces = len(face_locations)
     st.write(f'Number of Faces Detected: {num_faces}')
